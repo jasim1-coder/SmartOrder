@@ -1,4 +1,5 @@
-﻿using SmartOrder.Domain.ValueObjects;
+﻿using SmartOrder.Domain.Aggregates;
+using SmartOrder.Domain.ValueObjects;
 
 
 namespace SmartOrder.Domain.Tests
@@ -8,7 +9,7 @@ namespace SmartOrder.Domain.Tests
         [Fact]
         public void Cannot_Cancel_Paid_Order()
         {
-            var order = new Order();
+            var order = Order.Create();
             order.AddItem(Guid.NewGuid(), new Money(100, "USD"), 1);
             order.MarkAsPaid();
 

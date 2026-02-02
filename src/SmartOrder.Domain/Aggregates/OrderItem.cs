@@ -5,7 +5,9 @@ namespace SmartOrder.Domain.Aggregates;
 
 public class OrderItem : Entity
 {
-    public Guid ProtectedId { get; }
+
+    protected OrderItem() { }
+    public Guid ProductId { get; }
     public int Quantity { get; }
     public Money UnitPrice { get; }
 
@@ -16,7 +18,7 @@ public class OrderItem : Entity
         if(quantity < 0)
             throw new ArgumentException("Quantity must be greater than zero");
 
-        ProtectedId = productId;
+        ProductId = productId;
         UnitPrice = unitPrice;
         Quantity = quantity;
 

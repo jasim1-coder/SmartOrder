@@ -1,7 +1,7 @@
 using SmartOrder.Domain.Common;
 using SmartOrder.Domain.ValueObjects;
 
-nameof SmartOrder.Domain.Aggregates;
+namespace SmartOrder.Domain.Aggregates;
 
 public class Order : Entity
 {
@@ -22,12 +22,17 @@ public class Order : Entity
         _items.Add(new OrderItem(productId, price, quantity));
     }
 
+    protected Order() { }
+
+
     public void MarkAsPaid()
     {
-        throw new InvalidOperationException("Cancelled order cannot be paid");
+        if (IsCancelled)
+            throw new InvalidOperationException("Cancelled order cannot be paid");
 
         IsPaid = true;
     }
+
 
     public void Cancel(string reason)
     {
@@ -35,5 +40,11 @@ public class Order : Entity
             throw new InvalidOperationException("Paid order cannot be cancelled");
 
         IsCancelled = true;
+    }
+
+
+    public static Order Create()
+    {
+        return new Order();
     }
 }

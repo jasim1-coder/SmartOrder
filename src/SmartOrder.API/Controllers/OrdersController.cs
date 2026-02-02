@@ -18,7 +18,7 @@ namespace SmartOrder.API.Controllers
         [HttpPost]
         public IActionResult Create()
         {
-            var order = _ordersService.CreateOrder();
+            var order = _ordersService.GetOrderAsync();
             return Ok(order.Id);
         }
     }
