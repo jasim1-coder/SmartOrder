@@ -18,7 +18,7 @@ namespace SmartOrder.Infrastructure.Repositories
         public async Task<Order?> GetByIdAsync(Guid id)
         {
             return await _context.Orders
-                .Include (o => o.Items)
+                .Include("_items") // Load the private field specifically
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
@@ -27,9 +27,12 @@ namespace SmartOrder.Infrastructure.Repositories
             await _context.Orders .AddAsync(order);
         }
 
+
+        // In OrderRepository.cs
         public async Task SaveChangesAsync()
         {
-           await _context.SaveChangesAsync();
+
+            await _context.SaveChangesAsync();
         }
     }
 }

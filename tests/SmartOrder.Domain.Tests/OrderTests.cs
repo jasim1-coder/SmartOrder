@@ -16,5 +16,20 @@ namespace SmartOrder.Domain.Tests
             Assert.Throws<InvalidOperationException>(() =>
             order.Cancel("Customer requested"));
         }
+
+        [Fact]
+        public void Adding_Item_To_Cancelled_Order_Should_Fail()
+        {
+            var order = Order.Create();
+            order.Cancel("Customer cancelled");
+
+            Assert.Throws<InvalidOperationException>(() =>
+                order.AddItem(
+                    Guid.NewGuid(),
+                    new Money(50, "USD"),
+                    1
+                ));
+        }
+
     }
 }

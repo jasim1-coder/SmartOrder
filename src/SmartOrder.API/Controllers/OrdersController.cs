@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SmartOrder.Application.DTOs;
 using SmartOrder.Application.Services;
+using System.Threading.Tasks;
 
 namespace SmartOrder.API.Controllers
 {
@@ -16,10 +18,26 @@ namespace SmartOrder.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var order = _ordersService.GetOrderAsync();
-            return Ok(order.Id);
+            var orderId = await _ordersService.CreateOrderAsync();
+            return Ok(orderId);
         }
+
+        [HttpPost("{orderId}/items")]
+        public async Task<IActionResult> AddItem(
+    Guid orderId,[FromBody] AddOrderItemRequest request)
+        {
+            await _ordersService.AddItemToOrderAsync(
+                orderId,
+                request.ProductId,
+                request.Price,
+                request.Currency,
+                request.Quantity
+            );
+
+            return NoContent();
+        }
+
     }
 }
