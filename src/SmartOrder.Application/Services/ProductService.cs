@@ -28,5 +28,19 @@ namespace SmartOrder.Application.Services
 
             return product.Id;
         }
+
+        public async Task<Product> GetActiveProductAsync(Guid productId)
+        {
+            var product = await _productRepository.GetByIdAsync(productId);
+
+            if(product is null)
+                throw new InvalidOperationException("Product not found");
+
+            if(!product.IsActive)
+                throw new InvalidOperationException("Product is not active");
+
+            return product;
+        }
+
     }
 }

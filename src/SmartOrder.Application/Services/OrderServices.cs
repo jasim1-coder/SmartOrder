@@ -13,10 +13,12 @@ namespace SmartOrder.Application.Services
     public class OrderServices
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly ProductService _productService;
 
-        public OrderServices(IOrderRepository orderRepository)
+        public OrderServices(IOrderRepository orderRepository, ProductService productService)
         {
             _orderRepository = orderRepository;
+            _productService = productService;
         }
 
         public async Task<Guid> CreateOrderAsync()
@@ -31,20 +33,20 @@ namespace SmartOrder.Application.Services
             return order.Id;
         }
 
-        public async Task AddItemToOrderAsync(Guid orderId, Guid productId, decimal price, string currency, int quantity)
+        public async Task AddItemToOrderAsync(Guid orderId, Guid productId , int quantity)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
-            if (order == null)
-            {
-                // If this hits, the ID you are passing in the URL doesn't exist in the DB
-                throw new Exception($"Order {orderId} not found in Database!");
-            }
+            
             if (order is null)
                 throw new InvalidOperationException("Order not found");
 
+            //CROSS-AGGREGATE VALIDATION
+
+            var product = await _productService.GetActiveProductAsync(productId);
+
             order.AddItem(
-                productId,
-                new Money(price, currency),
+                product.Id,
+                product.Price,
                 quantity
             );
 

@@ -27,14 +27,7 @@ namespace SmartOrder.API.Controllers
         [HttpPost("{orderId}/items")]
         public async Task<IActionResult> AddItem(Guid orderId,[FromBody] AddOrderItemRequest request)
         {
-            await _ordersService.AddItemToOrderAsync(
-                orderId,
-                request.ProductId,
-                request.Price,
-                request.Currency,
-                request.Quantity
-            );
-
+            await _ordersService.AddItemToOrderAsync(orderId,request.ProductId,request.Quantity );
             return NoContent();
         }
 

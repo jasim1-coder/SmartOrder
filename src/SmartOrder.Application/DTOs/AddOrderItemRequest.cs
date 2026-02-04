@@ -8,8 +8,6 @@ namespace SmartOrder.Application.DTOs
 {
     public record AddOrderItemRequest(
         Guid ProductId,
-        decimal Price,
-        string Currency,
         int Quantity
     );
 
