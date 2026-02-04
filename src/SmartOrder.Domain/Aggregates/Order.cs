@@ -30,6 +30,9 @@ public class Order : Entity
         if (IsCancelled)
             throw new InvalidOperationException("Cancelled order cannot be paid");
 
+        if (IsPaid)
+            throw new InvalidOperationException("Order is already paid");
+
         IsPaid = true;
     }
 

@@ -25,8 +25,7 @@ namespace SmartOrder.API.Controllers
         }
 
         [HttpPost("{orderId}/items")]
-        public async Task<IActionResult> AddItem(
-    Guid orderId,[FromBody] AddOrderItemRequest request)
+        public async Task<IActionResult> AddItem(Guid orderId,[FromBody] AddOrderItemRequest request)
         {
             await _ordersService.AddItemToOrderAsync(
                 orderId,
@@ -36,6 +35,13 @@ namespace SmartOrder.API.Controllers
                 request.Quantity
             );
 
+            return NoContent();
+        }
+
+        [HttpPost("{orderId}/pay")]
+        public async Task<IActionResult> Pay(Guid orderId)
+        {
+            await _ordersService.PayOrderAsync(orderId);
             return NoContent();
         }
 

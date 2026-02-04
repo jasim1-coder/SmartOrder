@@ -50,5 +50,16 @@ namespace SmartOrder.Application.Services
             await _orderRepository.SaveChangesAsync();
         }
 
+        public async Task PayOrderAsync(Guid orderId)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+
+            if (order == null) 
+                throw new InvalidOperationException("Order not found");
+
+            order.MarkAsPaid();
+            await _orderRepository.SaveChangesAsync();
+        }
+
     }
 }
