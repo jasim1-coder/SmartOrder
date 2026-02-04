@@ -51,7 +51,25 @@ namespace SmartOrder.Domain.Tests
                 order.MarkAsPaid());
         }
 
+        [Fact]
+        public void Cannot_Cancel_Paid_Orders()
+        {
+            var order = Order.Create();
+            order.MarkAsPaid();
 
+            Assert.Throws<InvalidOperationException>(() =>
+                order.Cancel("Customer request"));
+        }
+
+        [Fact]
+        public void Cannot_Cancel_Order_Twice()
+        {
+            var order = Order.Create();
+            order.Cancel("Changed mind");
+
+            Assert.Throws<InvalidOperationException>(() =>
+                order.Cancel("Second attempt"));
+        }
 
     }
 }

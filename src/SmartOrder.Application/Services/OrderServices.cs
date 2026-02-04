@@ -1,4 +1,5 @@
-﻿using SmartOrder.Domain.Aggregates;
+﻿using SmartOrder.Application.DTOs;
+using SmartOrder.Domain.Aggregates;
 using SmartOrder.Domain.Repositories;
 using SmartOrder.Domain.ValueObjects;
 using System;
@@ -9,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace SmartOrder.Application.Services
 {
-    public class OrderServices 
+    public class OrderServices
     {
         private readonly IOrderRepository _orderRepository;
 
-        public OrderServices(IOrderRepository orderRepository) 
+        public OrderServices(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
         }
@@ -30,7 +31,7 @@ namespace SmartOrder.Application.Services
             return order.Id;
         }
 
-        public async Task AddItemToOrderAsync(Guid orderId,Guid productId,decimal price,string currency,int quantity)
+        public async Task AddItemToOrderAsync(Guid orderId, Guid productId, decimal price, string currency, int quantity)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
             if (order == null)
@@ -54,11 +55,47 @@ namespace SmartOrder.Application.Services
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
-            if (order == null) 
+            if (order == null)
                 throw new InvalidOperationException("Order not found");
 
             order.MarkAsPaid();
             await _orderRepository.SaveChangesAsync();
+        }
+
+        public async Task CancelOrderAsync(Guid orderId, string reason)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+
+            if (order == null)
+                throw new InvalidOperationException("Order not found");
+
+            order.Cancel(reason);
+            await _orderRepository.SaveChangesAsync();
+        }
+
+        public async Task<OrderDto?> GetOrderByIdAsync(Guid orderId)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+
+            if (order is null)
+                return null;
+
+            var items = order.Items.Select(i => new OrderItemDto(
+                i.ProductId,
+                i.Quantity,
+                i.UnitPrice.Amount,
+                i.UnitPrice.Currency,
+                i.Total.Amount
+            )).ToList();
+
+            return new OrderDto(
+                order.Id,
+                order.IsPaid,
+                order.IsCancelled,
+                order.TotalAmount.Amount,
+                order.TotalAmount.Currency,
+                items
+            );
         }
 
     }

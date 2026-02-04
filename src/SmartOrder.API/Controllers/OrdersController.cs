@@ -44,6 +44,24 @@ namespace SmartOrder.API.Controllers
             await _ordersService.PayOrderAsync(orderId);
             return NoContent();
         }
+        [HttpPost("{orderId}/cancel")]
+        public async Task<IActionResult> Cancel(Guid orderId, [FromBody] CancelOrderRequest request)
+        {
+            await _ordersService.CancelOrderAsync(orderId, request.Reason);
+            return NoContent();
+        }
+
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetById(Guid orderId)
+        {
+            var order = await _ordersService.GetOrderByIdAsync(orderId);
+
+            if (order is null)
+                return NotFound();
+
+            return Ok(order);
+        }
+
 
     }
 }

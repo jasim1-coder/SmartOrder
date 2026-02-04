@@ -42,6 +42,9 @@ public class Order : Entity
         if(IsPaid)
             throw new InvalidOperationException("Paid order cannot be cancelled");
 
+        if (IsCancelled)
+            throw new InvalidOperationException("Order is already cancelled");
+
         IsCancelled = true;
     }
 
