@@ -10,6 +10,8 @@ namespace SmartOrder.Infrastructure.Data
         public SmartOrderDbContext(DbContextOptions<SmartOrderDbContext> options) : base(options) { }
 
         public DbSet<Order> Orders => Set<Order>();
+        public DbSet<Product> Products => Set<Product>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

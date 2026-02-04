@@ -17,9 +17,11 @@ builder.Services.AddDbContext<SmartOrderDbContext>(options =>
 
 // Repositories
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Application Services
 builder.Services.AddScoped<OrderServices>();
+builder.Services.AddScoped<ProductService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
