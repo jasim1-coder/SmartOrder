@@ -1,12 +1,7 @@
 ﻿using SmartOrder.Application.DTOs;
 using SmartOrder.Domain.Aggregates;
 using SmartOrder.Domain.Repositories;
-using SmartOrder.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SmartOrder.Application.Services
 {
@@ -14,35 +9,42 @@ namespace SmartOrder.Application.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ProductService _productService;
+        private readonly CustomerService _customerService;
 
-        public OrderServices(IOrderRepository orderRepository, ProductService productService)
+        public OrderServices(IOrderRepository orderRepository, ProductService productService, CustomerService customerService)
         {
             _orderRepository = orderRepository;
             _productService = productService;
+            _customerService = customerService;
         }
 
-        public async Task<Guid> CreateOrderAsync()
+        public async Task<Guid> CreateOrderAsync(Guid customerId)
         {
-            var order = Order.Create();
 
-            //order.AddItem(Guid.NewGuid(), new Money(100, "USD"), 2);
-            //order.Cancel("Not the expected size");
+            await _customerService.GetEligibleCustomerAsync(customerId);
+
+            var order = Order.Create(customerId);
+
             await _orderRepository.AddAsync(order);
             await _orderRepository.SaveChangesAsync();
 
             return order.Id;
         }
 
-        public async Task AddItemToOrderAsync(Guid orderId, Guid productId , int quantity)
+        public async Task AddItemToOrderAsync(Guid orderId, Guid productId , int quantity, Guid custoemrId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
             
             if (order is null)
                 throw new InvalidOperationException("Order not found");
 
-            //CROSS-AGGREGATE VALIDATION
 
-            var product = await _productService.GetActiveProductAsync(productId);
+            EnsureOwnership(order, custoemrId);
+
+
+               //CROSS-AGGREGATE VALIDATION
+
+               var product = await _productService.GetActiveProductAsync(productId);
 
             order.AddItem(
                 product.Id,
@@ -53,23 +55,29 @@ namespace SmartOrder.Application.Services
             await _orderRepository.SaveChangesAsync();
         }
 
-        public async Task PayOrderAsync(Guid orderId)
+        public async Task PayOrderAsync(Guid orderId , Guid customerId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
             if (order == null)
                 throw new InvalidOperationException("Order not found");
+
+            //  OWNERSHIP CHECK
+            EnsureOwnership(order, customerId);
 
             order.MarkAsPaid();
             await _orderRepository.SaveChangesAsync();
         }
 
-        public async Task CancelOrderAsync(Guid orderId, string reason)
+        public async Task CancelOrderAsync(Guid orderId, string reason, Guid customerId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
 
             if (order == null)
                 throw new InvalidOperationException("Order not found");
+
+            // OWNERSHIP CHECK
+            EnsureOwnership(order, customerId);
 
             order.Cancel(reason);
             await _orderRepository.SaveChangesAsync();
@@ -83,6 +91,7 @@ namespace SmartOrder.Application.Services
                 return null;
 
             var items = order.Items.Select(i => new OrderItemDto(
+                
                 i.ProductId,
                 i.Quantity,
                 i.UnitPrice.Amount,
@@ -92,12 +101,19 @@ namespace SmartOrder.Application.Services
 
             return new OrderDto(
                 order.Id,
+                order.CustomerId,
                 order.IsPaid,
                 order.IsCancelled,
                 order.TotalAmount.Amount,
                 order.TotalAmount.Currency,
                 items
             );
+        }
+
+        private static void EnsureOwnership(Order order, Guid customerId)
+        {
+            if (order.CustomerId != customerId)
+                throw new InvalidOperationException("You are not allowed to modify this order");
         }
 
     }

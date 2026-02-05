@@ -9,7 +9,8 @@ namespace SmartOrder.Domain.Tests
         [Fact]
         public void Cannot_Cancel_Paid_Order()
         {
-            var order = Order.Create();
+            var customerId = Guid.NewGuid();
+            var order = Order.Create(customerId);
             order.AddItem(Guid.NewGuid(), new Money(100, "USD"), 1);
             order.MarkAsPaid();
 
@@ -20,7 +21,8 @@ namespace SmartOrder.Domain.Tests
         [Fact]
         public void Adding_Item_To_Cancelled_Order_Should_Fail()
         {
-            var order = Order.Create();
+            var customerId = Guid.NewGuid();
+            var order = Order.Create(customerId);
             order.Cancel("Customer cancelled");
 
             Assert.Throws<InvalidOperationException>(() =>
@@ -34,7 +36,8 @@ namespace SmartOrder.Domain.Tests
         [Fact]
         public void Cannot_Pay_Cancelled_Order()
         {
-            var order = Order.Create();
+            var customerId = Guid.NewGuid();
+            var order = Order.Create(customerId);
             order.Cancel("Customer changed mind");
 
             Assert.Throws<InvalidOperationException>(() =>
@@ -44,7 +47,8 @@ namespace SmartOrder.Domain.Tests
         [Fact]
         public void Cannot_Pay_Order_Twice()
         {
-            var order = Order.Create();
+            var customerId = Guid.NewGuid();
+            var order = Order.Create(customerId);
             order.MarkAsPaid();
 
             Assert.Throws<InvalidOperationException>(() =>
@@ -54,7 +58,8 @@ namespace SmartOrder.Domain.Tests
         [Fact]
         public void Cannot_Cancel_Paid_Orders()
         {
-            var order = Order.Create();
+            var customerId = Guid.NewGuid();
+            var order = Order.Create(customerId);
             order.MarkAsPaid();
 
             Assert.Throws<InvalidOperationException>(() =>
@@ -64,7 +69,8 @@ namespace SmartOrder.Domain.Tests
         [Fact]
         public void Cannot_Cancel_Order_Twice()
         {
-            var order = Order.Create();
+            var customerId = Guid.NewGuid();
+            var order = Order.Create(customerId);
             order.Cancel("Changed mind");
 
             Assert.Throws<InvalidOperationException>(() =>

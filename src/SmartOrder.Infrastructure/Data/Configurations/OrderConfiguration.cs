@@ -15,6 +15,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.Id)
                .ValueGeneratedNever();
 
+        builder.Property(o => o.CustomerId)
+       .IsRequired();
+
+
         builder.Property(o => o.IsPaid).IsRequired();
         builder.Property(o => o.IsCancelled).IsRequired();
 

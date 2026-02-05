@@ -11,6 +11,8 @@ namespace SmartOrder.Infrastructure.Data
 
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<Product> Products => Set<Product>();
+        public DbSet<Customer> Customers => Set<Customer>();
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartOrder.Application.DTOs;
 using SmartOrder.Application.Services;
+using SmartOrder.Domain.Aggregates;
 using System.Threading.Tasks;
 
 namespace SmartOrder.API.Controllers
@@ -18,29 +19,16 @@ namespace SmartOrder.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(Guid customerId)
         {
-            var orderId = await _ordersService.CreateOrderAsync();
+            var orderId = await _ordersService.CreateOrderAsync(customerId);
             return Ok(orderId);
         }
 
         [HttpPost("{orderId}/items")]
-        public async Task<IActionResult> AddItem(Guid orderId,[FromBody] AddOrderItemRequest request)
+        public async Task<IActionResult> AddItem(Guid orderId, [FromBody] AddOrderItemRequest request)
         {
-            await _ordersService.AddItemToOrderAsync(orderId,request.ProductId,request.Quantity );
-            return NoContent();
-        }
-
-        [HttpPost("{orderId}/pay")]
-        public async Task<IActionResult> Pay(Guid orderId)
-        {
-            await _ordersService.PayOrderAsync(orderId);
-            return NoContent();
-        }
-        [HttpPost("{orderId}/cancel")]
-        public async Task<IActionResult> Cancel(Guid orderId, [FromBody] CancelOrderRequest request)
-        {
-            await _ordersService.CancelOrderAsync(orderId, request.Reason);
+            await _ordersService.AddItemToOrderAsync(orderId, request.ProductId, request.Quantity, request.CustomerId);
             return NoContent();
         }
 
@@ -55,6 +43,22 @@ namespace SmartOrder.API.Controllers
             return Ok(order);
         }
 
+        [HttpPost("{orderId}/pay")]
+        public async Task<IActionResult> Pay(Guid orderId, Guid customerId)
+        {
+            await _ordersService.PayOrderAsync(orderId, customerId);
+            return NoContent();
+        }
 
+        [HttpPost("{orderId}/cancel")]
+        public async Task<IActionResult> Cancel(Guid orderId, [FromBody] CancelOrderRequest request, Guid customerId) {
+            {
+                await _ordersService.CancelOrderAsync(orderId, request.Reason, customerId);
+                return NoContent();
+            }
+
+            
+
+        }
     }
 }

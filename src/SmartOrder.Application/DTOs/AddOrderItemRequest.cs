@@ -8,7 +8,8 @@ namespace SmartOrder.Application.DTOs
 {
     public record AddOrderItemRequest(
         Guid ProductId,
-        int Quantity
+        int Quantity,
+        Guid CustomerId
     );
 
 }

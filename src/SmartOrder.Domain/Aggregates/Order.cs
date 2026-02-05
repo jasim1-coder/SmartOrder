@@ -11,6 +11,8 @@ public class Order : Entity
     public bool IsPaid { get; private set; }
     public bool IsCancelled { get; private set; }
 
+    public Guid CustomerId { get; private set; }
+
     public Money TotalAmount => 
         _items.Aggregate(new Money(0, "USD"), (current , item) => current.Add(item.Total));
     
@@ -23,6 +25,12 @@ public class Order : Entity
     }
 
     protected Order() { }
+
+
+    private Order(Guid customerId)
+    {
+        CustomerId = customerId;
+    }
 
 
     public void MarkAsPaid()
@@ -49,8 +57,10 @@ public class Order : Entity
     }
 
 
-    public static Order Create()
+    public static Order Create(Guid customerId)
     {
-        return new Order();
+        if (customerId == Guid.Empty)
+            throw new InvalidOperationException("CustomerId is required");
+        return new Order(customerId);
     }
 }

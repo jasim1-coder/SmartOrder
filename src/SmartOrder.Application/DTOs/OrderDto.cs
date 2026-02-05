@@ -17,6 +17,7 @@ namespace SmartOrder.Application.DTOs
 
     public record OrderDto(
         Guid Id,
+        Guid CustomerId,
         bool IsPaid,
         bool IsCancelled,
         decimal TotalAmount,
