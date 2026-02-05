@@ -226,28 +226,6 @@ SmartOrder/
 
 ---
 
-## 💡 Design Decisions
-
-<details>
-<summary><b>Why place business logic in domain entities?</b></summary>
-
-To avoid anemic domain models where entities are just data containers. Business rules and state transitions are encapsulated within the entities themselves. Example: `Order.AddItem()` and `Order.MarkAsPaid()`.
-</details>
-
-<details>
-<summary><b>How are cross-aggregate operations handled?</b></summary>
-
-Through the Application layer, which coordinates between aggregates without creating direct dependencies between them. See `CreateOrderHandler` for an example.
-</details>
-
-<details>
-<summary><b>Why reference other aggregates by ID only?</b></summary>
-
-To maintain aggregate boundaries and prevent coupling. For example, `Order.CustomerId` and `OrderItem.ProductId` are IDs, not object references.
-</details>
-
----
-
 ## 📫 Contact
 
 **Muhammed Jasim**  
@@ -255,7 +233,5 @@ To maintain aggregate boundaries and prevent coupling. For example, `Order.Custo
 
 ---
 
-## 📄 License
 
-This project is available under the MIT License - see [LICENSE](LICENSE) file for details.
 
