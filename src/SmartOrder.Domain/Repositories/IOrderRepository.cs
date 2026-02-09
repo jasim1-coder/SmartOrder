@@ -9,6 +9,5 @@ namespace SmartOrder.Domain.Repositories
         Task<Order> GetByIdAsync(Guid id);
 
         Task SaveChangesAsync();
-
     }
 }
