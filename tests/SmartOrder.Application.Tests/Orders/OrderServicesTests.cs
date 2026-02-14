@@ -2,6 +2,7 @@
 using Moq;
 using SmartOrder.Application.Services;
 using SmartOrder.Domain.Aggregates;
+using FluentAssertions;
 
 namespace SmartOrder.Application.Tests.Orders
 {
@@ -50,7 +51,7 @@ namespace SmartOrder.Application.Tests.Orders
 
             var orderId = await service.CreateOrderAsync(customerId);
 
-            Assert.NotEqual(Guid.Empty, orderId);
+            orderId.Should().NotBe(Guid.Empty);
         }
 
         [Fact]
@@ -67,13 +68,7 @@ namespace SmartOrder.Application.Tests.Orders
             var service = CreateService();
 
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                service.AddItemToOrderAsync(
-                    order.Id,
-                    Guid.NewGuid(),
-                    1,
-                    attackerId
-
-                )
+                service.AddItemToOrderAsync(order.Id,Guid.NewGuid(),1,attackerId)
             );
         }
 
